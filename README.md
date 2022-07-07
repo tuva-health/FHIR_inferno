@@ -46,7 +46,7 @@ Available configurations:
 #### inputPath and outputPath
 The relative or global paths to the input .ndjson file and output csv. Path must be to a file, no wildcards are available at this time.
 
-The input path must point to a well-formed .ndjson file.  The file can contain multiple Fhir objects in json format, separated by newlines. Newlines are not allowed in internal json whitespace, though other whitespace characters are fine.
+The input path must point to a well-formed .ndjson file. Ndjson, or "newline delimeted json," is a format that allows for a series of json objects in one file.  The format specifications are the same as json, except that new lines are not  allowed in internal whitespace within the json object; instead, newlines are used to separate json object in the one file. Other internal whitespace such as tab and space are fine.
 
 The outputPath is the path to the output CSV.  The output file will contain a header row defined by the keys in the `[Struct]` configuraiton section, and fully quoted output from the extracted FHIR data.
 
