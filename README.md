@@ -1,8 +1,8 @@
 # Fhir Connector
-The Tuva FHIR connector is a python library designed to parse json objects and write teh data they contain csv, so that they can be loaded to a warehouse or database for further processing or analysis.  The library was designed for simplicity, and may not handle all advanced use cases.  There are no package dependencies.
+The Tuva FHIR connector is a python library designed to parse json objects and write the data they contain to csv, so that they can be loaded to a warehouse or database for further processing or analysis.  The library was designed for simplicity, and may not handle all advanced use cases.  There are no package dependencies.
 
 ### Usage
-The fhir connector library contains a ParseFhir method that parses through a .ndjson file containing multiple fhir objects, and writes the content to a csv. ParseFhir accepts a configuration file in ini format that defines the input and output files, the structure of the output file, and the json paths to the column data in the FHIR object.
+The FHIR connector library contains a ParseFhir method that parses through a .ndjson file containing multiple FHIR objects, and writes the content to a csv. ParseFhir accepts a configuration file in ini format that defines the input and output files, the structure of the output file, and the json paths to the column data in the FHIR object.
     
     import parseFhir
     
