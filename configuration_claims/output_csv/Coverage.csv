@@ -1,3 +1,0 @@
-"patient_id","coverage_start_date","coverage_end_date","payer","payer_type","dual_status","medicare_status","data_source"
-"88800933501","2020-01-01","","UPMC Health Plan","medicare","","","SynFhir"
-"88800933501","2017-01-01","2017-06-30","UPMC Health Plan","medicare","","","SynFhir"
