@@ -1,2 +1,0 @@
-"patient_id","name","gender","race","ethnicity","birth_date","death_date","death_flag","address","city","state","zip_code","phone","email","ssn","data_source"
-"88800933501","","male","","","1943-01-01","","","123 Main Street","PITTSBURGH","PA","15239","5555555555","","","SynFhir"
