@@ -34,7 +34,7 @@ def getJsonValue(lnjsn, ln):
             x = x[11:]
             found = False
             for i in range(len(lnjsn)):
-                if getJsonValue(lnjsn[i], x.replace(",", ".")) is None:
+                if getJsonValue(lnjsn[i], x.replace(",",".")) is None:
                     lnjsn = lnjsn[i]
                     found = True
                     break
@@ -44,8 +44,8 @@ def getJsonValue(lnjsn, ln):
             spl = x[8:].split("|")
             found = False
             for i in range(len(lnjsn)):
-                if getJsonValue(lnjsn[i], spl[0].replace(",", ".")) == spl[
-                    1].replace(",", "."):
+                if getJsonValue(lnjsn[i], spl[0].replace(",",".")
+                                ) == spl[1].replace(",","."):
                     lnjsn = lnjsn[i]
                     found = True
                     break
@@ -61,7 +61,7 @@ def getJsonValue(lnjsn, ln):
                 lnjsn = spl[2]
         elif x.startswith("IfEq:"):
             spl = x[5:].split("|")
-            if lnjsn[spl[0]] == spl[1].replace(",", "."):
+            if lnjsn[spl[0]] == spl[1].replace(",","."):
                 lnjsn = spl[2]
             else:
                 lnjsn = spl[3]
@@ -83,7 +83,7 @@ def getJsonValue(lnjsn, ln):
             x = x[9:]
             if x in lnjsn:
                 lnjsn = lnjsn[x]
-                lnjsn = lnjsn[:19].replace("T", " ")
+                lnjsn = lnjsn[:19].replace("T"," ")
             else:
                 return None
         elif x in lnjsn:
@@ -134,10 +134,13 @@ def parse(configpath):
         paths.append(config['Struct'][key])
         leng = leng + 1
 
-    thisRow = [""] * leng
+    thisRow = [""]*leng
     csvfile = open(outputPath, writemode, newline='')
-    csvwriter = csv.writer(csvfile, delimiter=',', escapechar='\\',
-                           quoting=csv.QUOTE_ALL)
+    csvwriter = csv.writer(csvfile,
+                           delimiter=',',
+                           escapechar='\\',
+                           quoting=csv.QUOTE_ALL
+                           )
     if writemode == "w":
         csvwriter.writerow(header)
 
@@ -149,6 +152,9 @@ def parse(configpath):
                 jsndict = json.loads(jsntxt)
             except:
                 badfile.write(jsntxt)
+                logging.exception('Issue with input file "%s", see badfile.csv',
+                                  configpath
+                                  )
             if anchor == False:
                 for i in range(leng):
                     thisRow[i] = combineValues(jsndict, paths[i])
@@ -169,12 +175,15 @@ def parse(configpath):
                     for i in range(leng):
                         if paths[i][:7] == 'Anchor:':
                             thisRow[i] = combineValues(anchorArray,
-                                                       paths[i][7:])
+                                                       paths[i][7:]
+                                                       )
                         else:
                             thisRow[i] = combineValues(jsndict, paths[i])
                     csvwriter.writerow(thisRow)
                     row_count = row_count + 1
 
     csvfile.close()
-    logging.info('Finished parsing "%s", %s rows written', configpath,
-                 str(row_count))
+    logging.info('Finished parsing "%s", %s rows written',
+                 configpath,
+                 str(row_count)
+                 )
