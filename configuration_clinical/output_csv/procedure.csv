@@ -1,3 +1,0 @@
-"encounter_id","patient_id","procedure_date","code_type","code","description","physician_npi","data_source"
-"","example","2002-05-23","syntegra","24165007","Alcoholism counseling","","SynFhir"
-"","example","","syntegra","33249","","practitioner-1","SynFhir"

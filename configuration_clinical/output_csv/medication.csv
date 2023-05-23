@@ -1,4 +1,0 @@
-"encounter_id","patient_id","request_date","filled_date","paid_date","request_status","medication_name","ndc","rx_norm","dose","dose_unit","quantity","refills","duration","route","physician_npi","note","paid_amount","data_source"
-"example-1","example","2019-06-24","","","active","","","","","","","","","","","","","SynFhir"
-"","example","2008-04-05","2008-04-05","","active","","","","","","","","","","","","","SynFhir"
-"","example","2008-04-05","2008-04-05","","active","Nizatidine 15 MG/ML Oral Solution [Axid]","","","","","","","","","","","","SynFhir"

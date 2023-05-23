@@ -2,8 +2,12 @@ import json
 import sys
 import csv
 import configparser
+import logging
 
-
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s: %(levelname)s - %(message)s'
+)
 
 
 ##### functions #####
@@ -16,7 +20,7 @@ def is_integer(n):
         return float(n).is_integer()
 
 
-def getJsonValue(lnjsn,ln):
+def getJsonValue(lnjsn, ln):
     retVal = ""
     for x in ln.split("."):
         if x.startswith("ArrJoin:"):
@@ -30,17 +34,18 @@ def getJsonValue(lnjsn,ln):
             x = x[11:]
             found = False
             for i in range(len(lnjsn)):
-                if getJsonValue(lnjsn[i],x.replace(",",".")) is None:
+                if getJsonValue(lnjsn[i], x.replace(",",".")) is None:
                     lnjsn = lnjsn[i]
                     found = True
                     break
             if found != True:
                 return None
         elif x.startswith("ArrCond:"):
-            spl= x[8:].split("|")
+            spl = x[8:].split("|")
             found = False
             for i in range(len(lnjsn)):
-                if getJsonValue(lnjsn[i],spl[0].replace(",",".")) == spl[1].replace(",","."):
+                if getJsonValue(lnjsn[i], spl[0].replace(",",".")
+                                ) == spl[1].replace(",","."):
                     lnjsn = lnjsn[i]
                     found = True
                     break
@@ -83,46 +88,46 @@ def getJsonValue(lnjsn,ln):
                 return None
         elif x in lnjsn:
             lnjsn = lnjsn[x]
-        elif is_integer(x) :
+        elif is_integer(x):
             if int(x) < len(lnjsn):
                 lnjsn = lnjsn[int(x)]
-            else: 
+            else:
                 lnjsn = ""
-                break    
+                break
         else:
             return None
     return lnjsn
 
 
-def combineValues(jsn,path):
+def combineValues(jsn, path):
     retVal = ""
     for ln in path.splitlines():
-
-        retVal = (retVal  + " " + str(getJsonValue(jsn,ln) or "")).strip()
+        retVal = (retVal + " " + str(getJsonValue(jsn, ln) or "")).strip()
     return retVal
 
 
 ####### Main #######
 def parse(configpath):
-    print("parsing: "+configpath)
+    logging.info('Started parsing "%s"', configpath)
     config = configparser.ConfigParser()
 
     config.read(configpath)
     inputPath = config['GenConfig']['inputPath']
     outputPath = config['GenConfig']['outputPath']
-    if config.has_option('GenConfig','anchor'):
-        anchor =  config['GenConfig']['anchor']
+    if config.has_option('GenConfig', 'anchor'):
+        anchor = config['GenConfig']['anchor']
     else:
-        anchor = False        
-    if config.has_option('GenConfig','WriteMode'):
+        anchor = False
+    if config.has_option('GenConfig', 'WriteMode'):
         if config['GenConfig']['WriteMode'] == 'append':
             writemode = "a"
     else:
-        writemode = "w"   
+        writemode = "w"
 
     header = []
     paths = []
     leng = 0
+    row_count = 0
 
     for key in config['Struct']:
         header.append(key)
@@ -130,41 +135,55 @@ def parse(configpath):
         leng = leng + 1
 
     thisRow = [""]*leng
-    csvfile = open(outputPath, writemode, newline = '')
-    csvwriter = csv.writer(csvfile, delimiter = ',', escapechar='\\',quoting=csv.QUOTE_ALL )
+    csvfile = open(outputPath, writemode, newline='')
+    csvwriter = csv.writer(csvfile,
+                           delimiter=',',
+                           escapechar='\\',
+                           quoting=csv.QUOTE_ALL
+                           )
     if writemode == "w":
         csvwriter.writerow(header)
 
-    badfile = open('badfile.csv','a')
-    
+    badfile = open('badfile.csv', 'a')
+
     with open(inputPath) as inputFile:
         for jsntxt in inputFile:
             try:
                 jsndict = json.loads(jsntxt)
             except:
                 badfile.write(jsntxt)
+                logging.exception('Issue with input file "%s", see badfile.csv',
+                                  configpath
+                                  )
             if anchor == False:
                 for i in range(leng):
                     thisRow[i] = combineValues(jsndict, paths[i])
                 csvwriter.writerow(thisRow)
+                row_count = row_count + 1
             else:
                 anchorArray = getJsonValue(jsndict, anchor)
-                if anchorArray is not None and isinstance(anchorArray,list):
+                if anchorArray is not None and isinstance(anchorArray, list):
                     for z in anchorArray:
                         for i in range(leng):
                             if paths[i][:7] == 'Anchor:':
-                                thisRow[i] = combineValues(z,paths[i][7:])
+                                thisRow[i] = combineValues(z, paths[i][7:])
                             else:
-                                thisRow[i] = combineValues(jsndict,paths[i])
-                        csvwriter.writerow(thisRow)  
+                                thisRow[i] = combineValues(jsndict, paths[i])
+                        csvwriter.writerow(thisRow)
+                        row_count = row_count + 1
                 elif anchorArray is not None:
                     for i in range(leng):
                         if paths[i][:7] == 'Anchor:':
-                            thisRow[i] = combineValues(anchorArray,paths[i][7:])
+                            thisRow[i] = combineValues(anchorArray,
+                                                       paths[i][7:]
+                                                       )
                         else:
-                            thisRow[i] = combineValues(jsndict,paths[i])
-                    csvwriter.writerow(thisRow)  
-
-            
+                            thisRow[i] = combineValues(jsndict, paths[i])
+                    csvwriter.writerow(thisRow)
+                    row_count = row_count + 1
 
     csvfile.close()
+    logging.info('Finished parsing "%s", %s rows written',
+                 configpath,
+                 str(row_count)
+                 )

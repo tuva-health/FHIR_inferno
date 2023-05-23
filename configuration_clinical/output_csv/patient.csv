@@ -1,4 +1,0 @@
-"patient_id","name","gender","race","ethnicity","birth_date","death_date","death_flag","address","city","state","zip_code","phone","email","ssn","data_source"
-"1032704","Child Example","male","Asian","","2016-01-15","","","49 Meadow St","Mounds","OK","74047","555-555-5555","","","SynFhir"
-"1032702","Amy V. Baxter","female","White","","1987-02-20","","","183 Mountain View St","Mounds","OK","74048","555-555-5555","amy.shaw@example.com","","SynFhir"
-"1032703","Infant Example","male","Asian","","2020-06-02","","","49 Meadow St","Mounds","OK","74047","555-555-5555","","","SynFhir"

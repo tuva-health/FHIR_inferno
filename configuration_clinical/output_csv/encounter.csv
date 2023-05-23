@@ -1,4 +1,0 @@
-"encounter_id","patient_id","encounter_type","encounter_start_date","encounter_end_date","admit_source_code","admit_source_description","admit_type_code","admit_type_description","discharge_disposition_code","discharge_disposition_description","physician_npi","location","facility_npi","ms_drg","paid_amount","data_source"
-"","example","Unknown (qualifier value)","","","","","","","01","Discharged to Home","","{'location': {'reference': 'Location/hospital', 'display': 'Holy Family Hospital'}}","","","","SynFhir"
-"","example","Normal delivery procedure (procedure)","","","","","","","","","","{'location': {'reference': 'Location/hospital', 'display': 'Holy Family Hospital'}}","","","","SynFhir"
-"","example","Office Visit","2015-11-01 17:00:14","2015-11-01 18:00:14","","","","","","","","","","","","SynFhir"
