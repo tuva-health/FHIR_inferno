@@ -133,10 +133,9 @@ def analyze_json_files(s3_path, resource_type_list, hashmap_analysis=False):
         # Prepare and write the INI file
         config = configparser.ConfigParser()
         config['GenConfig'] = {
-            'inputPath': f"{resource_type}.json",
             'outputPath': f"{resource_type}.csv",
-            'parseMode': 'json',
-            'WriteMode': 'append'
+            'inputFormat': 'json',
+            'writeMode': 'append'
         }
 
         if anchor_path:

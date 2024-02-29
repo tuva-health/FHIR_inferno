@@ -135,10 +135,9 @@ with open(hashmap_filename, 'w') as f:
 # Prepare and write the INI file
 config = configparser.ConfigParser()
 config['GenConfig'] = {
-    'inputPath': f"{keyword}.json",
     'outputPath': f"{keyword}.csv",
-    'parseMode': 'json',
-    'WriteMode': 'append'
+    'inputFormat': 'json',
+    'writeMode': 'append'
 }
 if anchor_path:
     config['GenConfig']['anchor'] = anchor_path
