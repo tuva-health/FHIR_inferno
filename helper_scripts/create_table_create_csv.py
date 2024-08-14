@@ -2,11 +2,11 @@ import os
 import configparser
 
 ### configuration
-config_folder = r'config_files'         ## folder with config files to analyze
+config_folder = r'configurations/configuration_bcda/config/'         ## folder with config files to analyze
 filename = 'create_table_scripts.sql'   ## output filename
-schema = 'RAW_DATA',                    ## schema to build
-convert_date_types = True,              ## whether or not to analyze column_names to identifiy dates and datetimes
-stage = '@my_stage/FHIR_Output/'        ## name of the stage in which transformed fhir is located
+schema = 'RAW_DATA'                     ## schema to build
+convert_date_types = True               ## whether or not to analyze column_names to identifiy dates and datetimes
+stage = '@bcda_stage/'        ## name of the stage in which transformed fhir is located
 
 
 
