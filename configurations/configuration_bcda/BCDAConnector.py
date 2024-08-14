@@ -6,10 +6,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import the parser script
 import parseFhir
 
-config_dir = r'configurations\configuration_bcda\config'
-input_dir = r'test'
-output_dir = r'testout'
-configs = ["Patient", "Coverage", "ExplanationOfBenefit"]
+config_dir = '../../bcda_synthetic/config'
+input_dir = r'../../bcda_synthetic/input_fhir'
+output_dir = r'../../bcda_synthetic/output_csv'
+configs = ["coverage"]
 
 
 def main():
@@ -38,7 +38,7 @@ def main():
                             parseFhir.parse(
                                 configPath=config_filepath,
                                 inputPath=input_filepath,
-                                outputPath=os.path.join(output_dir, f"{os.path.splitext(input_filename)[0]}_{key}{subKey}.csv"),
+                                outputPath=os.path.join(output_dir, f"{key}{subKey}.csv_{os.path.splitext(input_filename)[0]}.csv"),
                                 outputFormat = 'csv' )
 
                         except Exception as e:
