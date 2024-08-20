@@ -33,12 +33,12 @@ def main():
                         # print(config_filename[config_filename.find(key)+len(key):config_filename.rfind('.')])
                         subKey = config_filename[config_filename.find(key)+len(key):config_filename.rfind('.')]
 
-                        # print(f"Processing {input_filename} with {config_filename}")
+                        print(f"Processing {input_filename} with {config_filename}")
                         try:
                             parseFhir.parse(
                                 configPath=config_filepath,
                                 inputPath=input_filepath,
-                                outputPath=os.path.join(output_dir, f"{os.path.splitext(input_filename)[0]}_{key}{subKey}.csv"),
+                                outputPath=os.path.join(output_dir, f"{key}{subKey}.csv_{os.path.splitext(input_filename)[0]}.csv"),
                                 outputFormat = 'csv' )
 
                         except Exception as e:
