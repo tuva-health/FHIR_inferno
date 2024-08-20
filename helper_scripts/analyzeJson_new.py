@@ -147,9 +147,9 @@ if anchor_path:
 
 
 
-# Write the hashmap JSON file
-with open(hashmap_filename, 'w') as f:
-    json.dump(hash_obj, f, indent=4)
+# # Write the hashmap JSON file
+# with open(hashmap_filename, 'w') as f:
+#     json.dump(hash_obj, f, indent=4)
 
 # Prepare and write the INI file
 config = configparser.ConfigParser()
