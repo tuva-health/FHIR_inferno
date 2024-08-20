@@ -1,10 +1,13 @@
+# This is just so you can import parseFhir from the parent folder
+# if parseFhir.py is in the same folder as connector this isn't needed.
+import os, sys
 # Import the parser script
 import parseFhir
 
 config_dir = r'config'
 input_dir = r'input_fhir'
 output_dir = r'output_csv'
-configs = ["patient", "coverage", "explanationofbenefit"]
+configs = ["patient", "coverage", "explanation"]
 
 
 def main():
