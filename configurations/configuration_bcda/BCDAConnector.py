@@ -6,10 +6,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # Import the parser script
 import parseFhir
 
-config_dir = r'configurations\configuration_bcda\config'
-input_dir = r'test'
-output_dir = r'testout'
-configs = ["Patient", "Coverage", "ExplanationOfBenefit"]
+config_dir = r'config'
+input_dir = r'input_fhir'
+output_dir = r'output_csv'
+configs = ["patient", "coverage", "explanationofbenefit"]
 
 
 def main():
