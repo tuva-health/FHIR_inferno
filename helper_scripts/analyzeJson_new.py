@@ -6,7 +6,7 @@ from collections import defaultdict, Counter
 
 
 # Configuration
-folder_path = r'input_fhir' # folder path with files to analyze
+folder_path = r'../bcda_synthetic/input_fhir'  # folder path with files to analyze
 keyword = 'coverage' # Replace with the keyword of filenames to process, usually the resource type
 anchor_path = ''  # Replace with your root path or leave as empty string for the root of the JSON
 # ignore_list = ['procedure','diagnosis','supportingInfo','benefitBalance.0.financial','item.0.adjudication', 'item.0.extension', 'extension', 'careTeam']#['extension', 'activity','contained']  # Replace with paths to ignore
