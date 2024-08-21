@@ -94,7 +94,7 @@ def analyze_json_files(folder_path, keyword, anchor_path='', ignore_list=None, i
     for root, dirs, files in os.walk(folder_path):
         for filename in files:
             if filename.endswith('.' + inputFormat) and keyword in filename:
-                with open(os.path.join(root, filename), 'r') as file:
+                with open(os.path.join(root, filename), 'r', encoding='utf-8') as file:
                     if inputFormat == 'json':
                         root_obj = json.load(file)
                         root_paths, anchor_paths, max_root_array_counts, max_anchor_array_counts = analyze_one_file(
@@ -148,8 +148,8 @@ if anchor_path:
 
 
 # Write the hashmap JSON file
-with open(hashmap_filename, 'w') as f:
-    json.dump(hash_obj, f, indent=4)
+# with open(hashmap_filename, 'w') as f:
+#     json.dump(hash_obj, f, indent=4)
 
 # Prepare and write the INI file
 config = configparser.ConfigParser()

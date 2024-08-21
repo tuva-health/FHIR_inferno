@@ -1,15 +1,13 @@
 # This is just so you can import parseFhir from the parent folder
 # if parseFhir.py is in the same folder as connector this isn't needed.
 import os, sys
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
 # Import the parser script
 import parseFhir
 
-config_dir = r'configurations\configuration_bcda\config'
-input_dir = r'test'
-output_dir = r'testout'
-configs = ["Patient", "Coverage", "ExplanationOfBenefit"]
+config_dir = r'config'
+input_dir = r'input_fhir'
+output_dir = r'output_csv'
+configs = ["patient", "coverage", "explanation"]
 
 
 def main():
@@ -33,12 +31,12 @@ def main():
                         # print(config_filename[config_filename.find(key)+len(key):config_filename.rfind('.')])
                         subKey = config_filename[config_filename.find(key)+len(key):config_filename.rfind('.')]
 
-                        # print(f"Processing {input_filename} with {config_filename}")
+                        print(f"Processing {input_filename} with {config_filename}")
                         try:
                             parseFhir.parse(
                                 configPath=config_filepath,
                                 inputPath=input_filepath,
-                                outputPath=os.path.join(output_dir, f"{os.path.splitext(input_filename)[0]}_{key}{subKey}.csv"),
+                                outputPath=os.path.join(output_dir, f"{key}{subKey}.csv_{os.path.splitext(input_filename)[0]}.csv"),
                                 outputFormat = 'csv' )
 
                         except Exception as e:
