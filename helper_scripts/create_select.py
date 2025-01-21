@@ -68,4 +68,4 @@ def process_ini_files(input_dir, output_dir, schema=None, add_qualify=False):
                     output_file.write(select_statement)
 
 # Example usage
-process_ini_files(r'C:\Users\forre\PycharmProjects\HG_connector\modules\lambda\config', r'selects', 'raw', True)
+process_ini_files(r'configurations/configuration_Metriport', r'selects', 'raw', True)
