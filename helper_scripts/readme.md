@@ -4,10 +4,6 @@ These helper scripts simplify and automate some of the setup and administration 
 
 Use cases and setups can vary greatly, and you may need to tweak these files to fit your needs.
 
-#### Metriport scripts
-
-The comprehensive guide on how to use Metriport scripts, refer to our internal Notion documentation - [link](https://www.notion.so/metriport/Tuva-Integration-177b51bb90408066ba6ae29cbb572c86)
-
 #### analyzeJson.py
 
 This script will read through a batch of FHIR files in a folder, filter for a specific resource type by filename, collect all of the paths, and build a well formatted configuration file.
