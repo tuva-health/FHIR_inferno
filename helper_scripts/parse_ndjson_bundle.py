@@ -1,13 +1,15 @@
-import parseFhir
+import sys
 import os
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+import parseFhir
 import json
 
 # This script allows you to convert your entire NDJSON FHIR Bundle into CSV output files based on the selected configurations.
 
 # Define base paths
-config_folder = 'configurations/configuration_Metriport/'
-input_path = 'scratch-input.ndjson'
-outputs_folder = 'outputs'
+config_folder = './configurations/configuration_Metriport/'
+input_path = './scratch-input.ndjson'
+outputs_folder = './outputs'
 output_format = 'csv'
 
 def get_resource_type_from_config(config_file):
@@ -42,8 +44,8 @@ for resource_type, config_files in config_groups.items():
         for line in infile:
             try:
                 resource = json.loads(line)
-                if resource.get('resourceType') == resource_type:
-                    outfile.write(line)
+                if resource['resource'].get('resourceType') == resource_type:
+                    outfile.write(json.dumps(resource['resource']) + '\n')
             except json.JSONDecodeError:
                 continue
 
