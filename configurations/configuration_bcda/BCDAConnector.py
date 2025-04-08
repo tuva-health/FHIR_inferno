@@ -1,7 +1,9 @@
 # This is just so you can import parseFhir from the parent folder
 # if parseFhir.py is in the same folder as connector this isn't needed.
 import os, sys
-# Import the parser script
+# Add parent directory of the current script to the system path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
+
 import parseFhir
 
 config_dir = r'config'
