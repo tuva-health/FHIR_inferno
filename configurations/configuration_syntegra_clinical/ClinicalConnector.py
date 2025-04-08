@@ -2,6 +2,7 @@
 # if parseFhir.py is in the same directory as ClinicalConnector.py or its in a location
 # listed in the path environmental variable, this wouldn't be needed.
 import os, sys
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import parseFhir
