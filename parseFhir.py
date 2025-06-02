@@ -288,7 +288,7 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
 
 
     if inputFormat == 'ndjson':
-        with open(inputPath) as inputFile:
+        with open(inputPath, encoding='utf-8-sig') as inputFile:
             for jsntxt in inputFile:
                 result_count = 0
                 try:
@@ -303,7 +303,7 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
                                       )
                 row_count = row_count + (result_count or 0)
     elif inputFormat == 'json':
-        with open(inputPath) as inputFile:
+        with open(inputPath, encoding='utf-8-sig') as inputFile:
             result_count = 0
             try:
                 jsndict = json.loads(inputFile.read())
