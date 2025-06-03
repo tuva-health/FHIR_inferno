@@ -11,6 +11,8 @@ logging.basicConfig(
     format='%(asctime)s: %(levelname)s - %(message)s'
 )
 
+logger = logging.getLogger()
+logger.setLevel(logging.INFO)
 
 
 def extract_paths(json_obj, current_path='', all_paths=None, ignore_paths=None):
@@ -235,7 +237,7 @@ def parse_one_resource(anchor,paths,jsndict,leng,csvwriter,data,filename,outputF
 
 def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputFormat=None,inputFormat=None,writeMode=None):
     f = open(configPath, "r")
-    logging.debug('Started parsing "%s"', configPath)
+    logging.info('Started parsing "%s"', configPath)
 
     config = configparser.ConfigParser()
     try:
@@ -336,7 +338,7 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
             raise ImportError("Please install pandas to use the 'return' output format.")
 
         return pd.DataFrame(data, columns=header)
-    logging.debug('Finished parsing "%s", %s rows written',
+    logging.info('Finished parsing "%s", %s rows written',
                  configPath,
                  str(row_count)
                  )
