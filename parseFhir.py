@@ -179,7 +179,7 @@ def combineValues(jsn, path, filename):
     values = []
     for ln in path.splitlines():
         value = getJsonValue(jsn, ln, filename)
-        if value:  # This will skip over both None and empty strings
+        if value is not None and value != '':  # This will skip over both None and empty strings, preserves 0 and False
             values.append(str(value))
 
     retVal = " ".join(values).strip()
