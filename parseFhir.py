@@ -11,9 +11,6 @@ logging.basicConfig(
     format='%(asctime)s: %(levelname)s - %(message)s'
 )
 
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
-
 
 def extract_paths(json_obj, current_path='', all_paths=None, ignore_paths=None):
     if all_paths is None:
