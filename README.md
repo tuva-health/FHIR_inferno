@@ -20,6 +20,11 @@ The parse method can also compare the columns that were present in the FHIR obje
 
 The parseFhir method streams .ndjson files one line at a time, so large input files can be handled without needing to commit the entire file to memory.
 
+You can also use the utility script to execute the parse function via CLI.
+
+    python utils/run_parser.py --config config/your_config.ini --input data/your_input.json --output output.csv
+
+
 ## Configuration
 The path to the config file must be passed to the parse method via a `configPath` parameter.  There are a number of general configurations that can be passed to the method or set in the config file in the `[GenConfig] section.
 

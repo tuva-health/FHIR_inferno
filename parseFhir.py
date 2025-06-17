@@ -12,7 +12,6 @@ logging.basicConfig(
 )
 
 
-
 def extract_paths(json_obj, current_path='', all_paths=None, ignore_paths=None):
     if all_paths is None:
         all_paths = set()
@@ -179,7 +178,7 @@ def combineValues(jsn, path, filename):
     values = []
     for ln in path.splitlines():
         value = getJsonValue(jsn, ln, filename)
-        if value:  # This will skip over both None and empty strings
+        if value is not None and value != '':  # This will skip over both None and empty strings, preserves 0 and False
             values.append(str(value))
 
     retVal = " ".join(values).strip()
@@ -235,7 +234,7 @@ def parse_one_resource(anchor,paths,jsndict,leng,csvwriter,data,filename,outputF
 
 def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputFormat=None,inputFormat=None,writeMode=None):
     f = open(configPath, "r")
-    logging.debug('Started parsing "%s"', configPath)
+    logging.info('Started parsing "%s"', configPath)
 
     config = configparser.ConfigParser()
     try:
@@ -288,7 +287,7 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
 
 
     if inputFormat == 'ndjson':
-        with open(inputPath) as inputFile:
+        with open(inputPath, encoding='utf-8-sig') as inputFile:
             for jsntxt in inputFile:
                 result_count = 0
                 try:
@@ -303,7 +302,7 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
                                       )
                 row_count = row_count + (result_count or 0)
     elif inputFormat == 'json':
-        with open(inputPath) as inputFile:
+        with open(inputPath, encoding='utf-8-sig') as inputFile:
             result_count = 0
             try:
                 jsndict = json.loads(inputFile.read())
@@ -336,7 +335,7 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
             raise ImportError("Please install pandas to use the 'return' output format.")
 
         return pd.DataFrame(data, columns=header)
-    logging.debug('Finished parsing "%s", %s rows written',
+    logging.info('Finished parsing "%s", %s rows written',
                  configPath,
                  str(row_count)
                  )
