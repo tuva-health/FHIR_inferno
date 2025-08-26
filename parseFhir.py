@@ -96,7 +96,7 @@ def getJsonValue(lnjsn, ln,filename = ""):
     for x in ln.split("."):
         if x.startswith("ArrJoin:"):
             x = x[8:]
-            if x in lnjsn:
+            if isinstance(lnjsn, dict) and x in lnjsn and isinstance(lnjsn[x], list):
                 tempVal = ' '.join([str(item) for item in lnjsn[x]])
                 lnjsn = tempVal
             else:
@@ -105,6 +105,30 @@ def getJsonValue(lnjsn, ln,filename = ""):
             lnjsn = filename
         elif x.startswith("GetDate:"):
             lnjsn = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        elif x.startswith("FileMTime:"):
+            # Returns file modified time in ISO8601 Z
+            try:
+                mtime = os.path.getmtime(filename) if filename else None
+                if mtime:
+                    lnjsn = datetime.utcfromtimestamp(mtime).isoformat() + 'Z'
+                else:
+                    lnjsn = datetime.utcnow().isoformat() + 'Z'
+            except Exception:
+                lnjsn = datetime.utcnow().isoformat() + 'Z'
+        elif x.startswith("JsonDump:"):
+            sub = x[9:]
+            try:
+                target = lnjsn if sub == '' else (lnjsn.get(sub) if isinstance(lnjsn, dict) else None)
+                lnjsn = json.dumps(target, ensure_ascii=False) if target is not None else None
+            except Exception:
+                lnjsn = None
+        elif x.startswith("ObjToKeyValArr:"):
+            sub = x[15:]
+            target = lnjsn if sub == '' else (lnjsn.get(sub) if isinstance(lnjsn, dict) else None)
+            if isinstance(target, dict):
+                lnjsn = [{"key": k, "value": v} for k, v in target.items()]
+            else:
+                return None
         elif x.startswith("ArrNotHave:"):
             x = x[11:]
             found = False
@@ -130,38 +154,38 @@ def getJsonValue(lnjsn, ln,filename = ""):
             lnjsn = x[5:]
         elif x.startswith("IfEx:"):
             spl = x[5:].split("|")
-            if spl[0] in lnjsn:
+            if isinstance(lnjsn, dict) and spl[0] in lnjsn:
                 lnjsn = spl[1]
             else:
                 lnjsn = spl[2]
         elif x.startswith("IfEq:"):
             spl = x[5:].split("|")
-            if lnjsn[spl[0]] == spl[1].replace(",","."):
+            if isinstance(lnjsn, dict) and spl[0] in lnjsn and lnjsn[spl[0]] == spl[1].replace(",","."):
                 lnjsn = spl[2]
             else:
                 lnjsn = spl[3]
         elif x.startswith("Left:"):
             spl = x[5:].split("|")
-            if spl[0] in lnjsn:
+            if isinstance(lnjsn, dict) and spl[0] in lnjsn:
                 lnjsn = lnjsn[spl[0]]
                 lnjsn = lnjsn[:int(spl[1])]
             else:
                 return None
         elif x.startswith("LTrim:"):
             spl = x[6:].split("|")
-            if spl[0] in lnjsn:
+            if isinstance(lnjsn, dict) and spl[0] in lnjsn:
                 lnjsn = lnjsn[spl[0]]
                 lnjsn = lnjsn[int(spl[1]):]
             else:
                 return None
         elif x.startswith("TimeForm:"):
             x = x[9:]
-            if x in lnjsn:
+            if isinstance(lnjsn, dict) and x in lnjsn:
                 lnjsn = lnjsn[x]
                 lnjsn = lnjsn[:19].replace("T"," ")
             else:
                 return None
-        elif x in lnjsn and not isinstance(lnjsn,str):
+        elif isinstance(lnjsn, dict) and x in lnjsn and not isinstance(lnjsn,str):
             lnjsn = lnjsn[x]
         elif is_integer(x):
             if isinstance(lnjsn, list) and int(x) < len(lnjsn):
@@ -239,7 +263,7 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
     config = configparser.ConfigParser()
     try:
         config.read(configPath)
-    except:
+    except Exception as e:
         logging.exception(f"Failed to read or parse the configuration file: {configPath}. Error: {e}")
         return
 
