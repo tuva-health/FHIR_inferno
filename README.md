@@ -7,10 +7,10 @@ FHIR Inferno is a python library designed to parse json objects, so that they ca
    - csv output mode: None
    - parquet output mode: pandas, pyarrow
    - return mode: pandas
-   - 
+
 ### Usage
 The library contains a parse method that parses through a .ndjson file containing multiple fhir objects or a json file, and either writes the content to a csv, parquet file, or returns a data frame to the caller.
-The parse method can also compare the columns that were present in the FHIR object against known columns, and write any new columns to a separate file for further consideration.
+The parse method can also compare the columns that were present in the FHIR object against known columns and write any new columns to a separate file for further consideration.
 
 
     import parseFhir
@@ -24,20 +24,22 @@ You can also use the utility script to execute the parse function via CLI.
 
     python utils/run_parser.py --config config/your_config.ini --input data/your_input.json --output output.csv
 
+The parseFhir evaluates whether the input argument is a directory or a single file. 
+Note: the config file must match every file in the directory.
 
 ## Configuration
 The path to the config file must be passed to the parse method via a `configPath` parameter.  There are a number of general configurations that can be passed to the method or set in the config file in the `[GenConfig] section.
 
-| Configuration | Definition                                                                                                                   | required                                     | defualt  |
+| Configuration | Definition                                                                                                                   | required                                     | default  |
 |---------------|------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------|----------|
-| inputPath     | Path of the input file                                                                                                       | yes                                          | none     |
+| inputPath     | Path of the input file or directory                                                                                          | yes                                          | none     |
 | outputPath    | Path of the output csv file                                                                                                  | yes for csv/parquet mode, no for return mode | none     |
 | missingPath   | If optionally set, function will write any unknown or new json paths in fhir objects to theis file                           | no                                           | none     |
 | inputFormat   | `json` or `ndjson`, depending on the input format. Currently, ndjson only supports csv output                                | no                                           | `json`   |
 | outputFormat  | `csv` or `parquet` to write to **outputPath**, or `return` to return a data fram to the caller                               | no                                           | `return` |
 | writeMode     | Determines if parseFHIR will overwrite the output file, or append to the output file.  Only applicable for csv output format | no                                           | `append` |
 
-The ini file will have at minimumm two sections: `[GenConfig]` , which defines the input and output files as well as some file-level options, and a `[Struct]` section, which defines the structure of the csv including the columns in the output, as well as the path(s) to that data in the fhir object.
+The ini file will have at minimum two sections: `[GenConfig]` , which defines the input and output files as well as some file-level options, and a `[Struct]` section, which defines the structure of the csv including the columns in the output, as well as the path(s) to that data in the fhir object.
 Optionally it can have a `[root_paths]` section, `[anchor_paths]` section, and `[ignore_paths]` section, which will determine the currently known paths for comparison, if the user wants to report the presence of any unknown or new paths (see missingPaths config description below).  
 
     [GenConfig]
@@ -65,12 +67,12 @@ First section of the ini file, defining object level configurations. Example:
     writeMode = append
 
 All general configuration configs (other than configPath) can be set in either the parameters passed to the function or the GenConfig section.
-In addition, an `anchor` can optionally be set in the [GenConfig] section, which will point to an array in the FHIR object that will act as the root.  More details below.  
+In addition, an `anchor` can optionally be set in the [GenConfig] section, which will point to an array in the FHIR object that will act as the root. More details below.  
 
 #### inputPath and outputPath
 The relative or global paths to input and output files. Path must be to a file, no wildcards for input are available at this time.
 
-outputFile is not required for outputFormat = return.  If in csv outputFormat, and write writeMode, the output file will contain a header row defined by the keys in the `[Struct]` configuraiton section.  
+outputFile is not required for outputFormat = return.  If in csv outputFormat, and write writeMode, the output file will contain a header row defined by the keys in the `[Struct]` configuration section.  
 CSVs will be fully quoted.
 
 
@@ -79,9 +81,9 @@ CSVs will be fully quoted.
     outputPath = outputvitalsign.csv
 
 #### inputFormat and outputFormat
-inputFormat can be ndjson or json. If ndjson inputFormat is set, the input path must point to a well-formed .ndjson file. Ndjson, or "newline delimeted json," is a format that allows for a series of json objects in one file.  The format specifications are the same as json, except that new lines are not  allowed in internal whitespace within the json object; instead, newlines are used to separate json object in the one file. Other internal whitespace such as tab and space are fine.
+inputFormat can be ndjson or json. If ndjson inputFormat is set, the input path must point to a well-formed .ndjson file. Ndjson, or "newline delimited json," is a format that allows for a series of json objects in one file.  The format specifications are the same as json, except that new lines are not allowed in internal whitespace within the json object; instead, newlines are used to separate json object in the one file. Other internal whitespace such as tab and space are fine.
 
-outputFormat can be csv, parquet, or return.  If outputFormat = return, the function will return a dataFrame.  If outputFormat = csv or parqut, the function will return None and will write the data to the outputPath.
+outputFormat can be csv, parquet, or return.  If outputFormat = return, the function will return a dataFrame.  If outputFormat = csv or parquet, the function will return None and will write the data to the outputPath.
 
 For inputFormat = ndjson, only outputFormat = csv is supported.  
 
@@ -93,11 +95,11 @@ Different outputFormats have different dependencies:
 
 
 #### Anchor
-If no anchor is supplied the output will include one row per FHIR object in the input, and all paths in the Struct section must be relative to the root of the fhir object.
+If no anchor is supplied, the output will include one row per FHIR object in the input, and all paths in the Struct section must be relative to the root of the fhir object.
 
-If an anchor is supplied, the output will include one row for every object found at that path.  If the path points to an array, the output will include 0..n rows per input fhir object (one per objects found in the array at that path), e.g. `anchor = diagnosis` will output one row for every diagnosis found in the FHIR object, or no rows if there is no diagnosis array or if it is empty.  If the anchor points to a value, it will output one row per FHIR object assuming that the path to the object exists, e.g. a config `Anchor = component.ArrCond:code,text|Systolic blood pressure.valueQuantity` will output one row per fhir object, only if the object contains a component with a text of "Systolic blood pressure" and if that object contains a valueQuantity value.
+If an anchor is supplied, the output will include one row for every object found at that path.  If the path points to an array, the output will include 0..n rows per input fhir object (one per objects found in the array at that path), e.g. `anchor = diagnosis` will output one row for every diagnosis found in the FHIR object, or no rows if there is no diagnosis array or if it is empty.  If the anchor points to a value, it will output one row per FHIR object assuming that the path to the object exists, e.g., a config `Anchor = component.ArrCond:code,text|Systolic blood pressure.valueQuantity` will output one row per fhir object, only if the object contains a component with a text of "Systolic blood pressure" and if that object contains a valueQuantity value.
 
-If an anchor is defined, paths relative to the root object can be defined in the `[Struct]` section like normal, or paths that start with `Anchor` will be evaluated relative to the current iteration of the anchor path.  The following will output as many rows as there are `diagnosis` objects found in that array,and will output the patient_id (found in the parent object) and the code (found in the disgnosis array) 
+If an anchor is defined, paths relative to the root object can be defined in the `[Struct]` section like normal, or paths that start with `Anchor` will be evaluated relative to the current iteration of the anchor path.  The following will output as many rows as there are `diagnosis` objects found in that array,and will output the patient_id (found in the parent object) and the code (found in the diagnosis array) 
     
     [GenConfig]
     inputPath = encounters.ndjson
@@ -116,7 +118,7 @@ Only relevant for outputMode = `csv`. The default behavior is `append`, which wi
 If you want to be notified if any new columns come in that you were not aware of previously, you can set a missingPaths.  If set, any new paths will be written to a csv at that location.
 
 To tell the parser which paths are already known, a `root_paths` or `anchor_paths` section must be filled out, and optionally an `ignore_paths` section can be filled out as well. 
-More details on the structure of those configurations below.
+More details on the structure of those configurations are below.
 
 ### Config Section: `[Struct]` - Structure of the output
 The Struct section defines the output.  Each key in the strut section will be a new column in the output csv.  The values should be a dot notated json path to the data in the fhir object. Integers can be used to hardcode specific iterations in an array.  If multiple fhir values should be concatenated into one column in the csv, they can be concatenated by notating multiple lines with separate paths.  To hardcode an empty column, give the Key but no value.
@@ -169,7 +171,7 @@ The output will have three columns: the filepath, the anchor that was being proc
 #### General Setup: `[Struct]` Keys in config are columns in output
 For every desired column in the output, add a key in the `[Struct]` section with the name of the desired column.  The value of any column that should be populated with FHIR data should be the dot notated Json path of the value. 
 
-The FhirConnector will produce a header row for each key in struct, and then add data from each fire object to the output for any columns with valid paths.  A key with no path will produce an empty column
+The FhirConnector will produce a header row for each key in struct and then add data from each fire object to the output for any columns with valid paths.  A key with no path will produce an empty column
 
 For example, this `[Struct]` section:
 
@@ -253,12 +255,12 @@ If the key to evaluate is not at the root level of the array object, param1 can 
 
 #### Method `ArrJoin:` Array Join
 
-| Method syntax | `ArrJoin:param1`          |
-|---------------|---------------------------|
-| Operates On:  | Array of Values           |
-| Param 1:      | key of array to concanate |
+| Method syntax | `ArrJoin:param1`            |
+|---------------|-----------------------------|
+| Operates On:  | Array of Values             |
+| Param 1:      | key of array to concatenate |
 
-ArrJoin will only work on an array of values, not on an array of objects.  ArrJoin will concatenate all of the values in the array together (space separated) and return them to a single column.
+ArrJoin will only work on an array of values, not on an array of objects.  ArrJoin will concatenate all the values in the array together (space separated) and return them to a single column.
 
     # returns concatenation of all values found in the "name.given" array
     # i.e. concatenates firstname, middlename, and any other names included  
@@ -369,7 +371,7 @@ if param1 is a path, or if param2 contains periods, convert `.` in parameters to
 | Operates On:  | Value (in FHIR dateTime format)                   |
 | Param 1:      | Key/path to evaluate                              |
 
-Converts dateTimes in the `YYYY-MM-DDThh:mm:ss+zz:zz` format used by fhir to the `YYYY-MM-DD hh:mm:ss` format required to load to a datetime/timestampe (no timezone) in redshift and other dbms.  
+Converts dateTimes in the `YYYY-MM-DDThh:mm:ss+zz:zz` format used by fhir to the `YYYY-MM-DD hh:mm:ss` format required to load to a datetime/timestamp (no timezone) in redshift and other dbms.  
 
     # Converts an effectiveDatetime to redshift input format
     # i.e. converts "2019-01-02T01:05:10.000Z" to "2019-01-02 01:05:10" 

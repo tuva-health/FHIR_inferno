@@ -60,9 +60,10 @@ def compare_and_write_new_paths(json_obj, filename, anchor, config_paths, output
 
 
     if new_paths:
-        os.makedirs(os.path.dirname(output_file), exist_ok=True)
+        dir_name = os.path.dirname(output_file)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
         with open(output_file, 'a') as file:
-
             for path in new_paths:
                 if anchor:
                     file.write(f'"{filename.name}","Anchor:{path}","{anchor}"\n')
@@ -267,8 +268,6 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
         logging.exception(f"Failed to read or parse the configuration file: {configPath}. Error: {e}")
         return
 
-
-
     anchor = config['GenConfig'].get('anchor', False)
     inputPath = inputPath or config['GenConfig']['inputPath']
     outputPath = outputPath or config['GenConfig']['outputPath']
@@ -283,7 +282,7 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
 
     if inputFormat == 'ndjson' and outputFormat != 'csv':
         raise ValueError("Input format 'ndjson' is only supported with 'csv' output format.")
-    
+
     data = []
     header = []
     paths = []
@@ -295,6 +294,7 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
         paths.append(config['Struct'][key])
         leng = leng + 1
 
+    # Prepare CSV writer if needed (single file for all inputs)
     if outputFormat == 'csv':
         csvfile = open(outputPath, writeMode, newline='')
         csvwriter = csv.writer(csvfile,
@@ -308,38 +308,63 @@ def parse(configPath,inputPath=None,outputPath=None,missingPath=None,outputForma
         csvfile = None
         csvwriter = None
 
-
-
-    if inputFormat == 'ndjson':
-        with open(inputPath, encoding='utf-8-sig') as inputFile:
-            for jsntxt in inputFile:
-                result_count = 0
-                try:
-                    jsndict = json.loads(jsntxt)
-                    result_count = parse_one_resource(anchor, paths, jsndict, leng, csvwriter,data,inputPath,outputFormat)
-                    if missingPath:
-                        compare_and_write_new_paths(jsndict,inputFile,anchor,config,missingPath)
-                except:
-
-                    logging.exception('Issue with input file "%s", see badfile.csv',
-                                      configPath
-                                      )
-                row_count = row_count + (result_count or 0)
-    elif inputFormat == 'json':
-        with open(inputPath, encoding='utf-8-sig') as inputFile:
-            result_count = 0
-            try:
+    def process_json_file(file_path):
+        nonlocal row_count
+        try:
+            with open(file_path, encoding='utf-8-sig') as inputFile:
                 jsndict = json.loads(inputFile.read())
-                result_count = parse_one_resource(anchor, paths, jsndict, leng, csvwriter,data,inputPath,outputFormat)
+                result_count = parse_one_resource(anchor, paths, jsndict, leng, csvwriter, data, file_path, outputFormat)
                 if missingPath:
-                    compare_and_write_new_paths(jsndict,inputFile,anchor,config,missingPath)
-            except:
-                logging.exception('Issue with input file "%s" ',
-                                  configPath
-                                  )
+                    compare_and_write_new_paths(jsndict, inputFile, anchor, config, missingPath)
+                row_count += (result_count or 0)
+        except Exception:
+            logging.exception('Issue with input file "%s" ', file_path)
 
+    def process_ndjson_file(file_path):
+        nonlocal row_count
+        try:
+            with open(file_path, encoding='utf-8-sig') as inputFile:
+                for jsntxt in inputFile:
+                    if not jsntxt.strip():
+                        continue
+                    try:
+                        jsndict = json.loads(jsntxt)
+                        result_count = parse_one_resource(anchor, paths, jsndict, leng, csvwriter, data, file_path, outputFormat)
+                        if missingPath:
+                            compare_and_write_new_paths(jsndict, inputFile, anchor, config, missingPath)
+                        row_count += (result_count or 0)
+                    except Exception:
+                        logging.exception('Issue with JSON line in "%s"', file_path)
+        except Exception:
+            logging.exception('Issue opening NDJSON file "%s"', file_path)
 
-            row_count = row_count + (result_count or 0)
+    # Determine if inputPath is a file or directory and process accordingly
+    if os.path.isdir(inputPath):
+        # Choose extensions based on inputFormat
+        if inputFormat == 'ndjson':
+            exts = ['.ndjson']
+        else:
+            exts = ['.json']
+        try:
+            for entry in sorted(os.listdir(inputPath)):
+                full_path = os.path.join(inputPath, entry)
+                if not os.path.isfile(full_path):
+                    continue
+                if not any(entry.lower().endswith(ext) for ext in exts):
+                    continue
+                if inputFormat == 'ndjson':
+                    process_ndjson_file(full_path)
+                else:  # json
+                    process_json_file(full_path)
+        except Exception:
+            logging.exception('Issue iterating directory "%s"', inputPath)
+    else:
+        # Single-file path (original behavior)
+        if inputFormat == 'ndjson':
+            process_ndjson_file(inputPath)
+        elif inputFormat == 'json':
+            process_json_file(inputPath)
+
     if outputFormat == 'csv':
         csvfile.close()
 
