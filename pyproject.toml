@@ -1,0 +1,49 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fhir-inferno"
+version = "0.1.0"
+description = "A simple library to parse FHIR JSON/NDJSON into CSV/Parquet or DataFrame"
+readme = "README.md"
+requires-python = ">=3.8"
+license = { file = "license" }
+authors = [
+  { name = "FHIR Inferno Contributors" }
+]
+keywords = ["FHIR", "healthcare", "ETL", "JSON", "NDJSON", "parquet", "CSV"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries",
+]
+# No hard runtime dependencies required for basic CSV mode
+# Pandas/pyarrow are optional depending on selected output mode
+
+dependencies = []
+
+[project.optional-dependencies]
+return = ["pandas>=1.0"]
+parquet = ["pandas>=1.0", "pyarrow>=8"]
+
+[project.urls]
+Homepage = "https://github.com/"  # update if desired
+
+[tool.setuptools]
+# Use a single-module layout; keep parseFhir.py at the project root
+py-modules = ["parseFhir"]
+
+[tool.setuptools.package-data]
+# none
+
+[tool.setuptools.exclude-package-data]
+# none

@@ -1,0 +1,7 @@
+
+[parquet]
+pandas>=1.0
+pyarrow>=8
+
+[return]
+pandas>=1.0

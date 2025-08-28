@@ -1,0 +1,9 @@
+README.md
+license
+parseFhir.py
+pyproject.toml
+fhir_inferno.egg-info/PKG-INFO
+fhir_inferno.egg-info/SOURCES.txt
+fhir_inferno.egg-info/dependency_links.txt
+fhir_inferno.egg-info/requires.txt
+fhir_inferno.egg-info/top_level.txt
