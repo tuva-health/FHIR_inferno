@@ -167,9 +167,43 @@ def getJsonValue(lnjsn, ln,filename = ""):
                 lnjsn = spl[3]
         elif x.startswith("Left:"):
             spl = x[5:].split("|")
-            if isinstance(lnjsn, dict) and spl[0] in lnjsn:
+            # Support two forms:
+            # 1) Left:key|N  -> takes left N chars of lnjsn[key]
+            # 2) Left:|N     -> takes left N chars of the current value (if it is a string or list)
+            if len(spl) >= 2 and spl[0] == "" and isinstance(lnjsn, (str, list)):
+                lnjsn = lnjsn[:int(spl[1])]
+            elif isinstance(lnjsn, dict) and spl[0] in lnjsn:
                 lnjsn = lnjsn[spl[0]]
                 lnjsn = lnjsn[:int(spl[1])]
+            else:
+                return None
+        elif x.startswith("LenCap:"):
+            spl = x[7:].split("|")
+            # Support two forms similar to Left:
+            # 1) LenCap:key|N|placeholder -> if len(value)>N return placeholder else return original value
+            # 2) LenCap:|N|placeholder    -> operates on current value
+            if len(spl) >= 3 and spl[0] == "":
+                target = lnjsn
+                try:
+                    n = int(spl[1])
+                except Exception:
+                    return None
+                placeholder = spl[2]
+                if isinstance(target, (str, list)):
+                    lnjsn = placeholder if len(target) > n else target
+                else:
+                    return None
+            elif len(spl) >= 3 and isinstance(lnjsn, dict) and spl[0] in lnjsn:
+                target = lnjsn[spl[0]]
+                try:
+                    n = int(spl[1])
+                except Exception:
+                    return None
+                placeholder = spl[2]
+                if isinstance(target, (str, list)):
+                    lnjsn = placeholder if len(target) > n else target
+                else:
+                    return None
             else:
                 return None
         elif x.startswith("LTrim:"):
