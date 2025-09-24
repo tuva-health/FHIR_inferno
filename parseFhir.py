@@ -245,6 +245,22 @@ def getJsonValue(lnjsn, ln,filename = ""):
                     return None
             else:
                 return None
+        elif x.startswith("RegexSub:"):
+            # Perform a regex substitution on the current value
+            # Supported form:
+            #   RegexSub:pattern|replacement
+            args = x[9:]
+            if "|" not in args:
+                return None
+            pattern, repl = args.split("|", 1)
+            if isinstance(lnjsn, (str, int, float)):
+                text = str(lnjsn)
+                try:
+                    lnjsn = re.sub(pattern, repl, text)
+                except re.error:
+                    return None
+            else:
+                return None
         elif x.startswith("TimeForm:"):
             x = x[9:]
             if isinstance(lnjsn, dict) and x in lnjsn:
