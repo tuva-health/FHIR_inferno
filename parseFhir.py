@@ -4,6 +4,7 @@ import csv
 import configparser
 import logging
 import os
+import re
 from datetime import datetime
 
 logging.basicConfig(
@@ -211,6 +212,37 @@ def getJsonValue(lnjsn, ln,filename = ""):
             if isinstance(lnjsn, dict) and spl[0] in lnjsn:
                 lnjsn = lnjsn[spl[0]]
                 lnjsn = lnjsn[int(spl[1]):]
+            else:
+                return None
+        elif x.startswith("Regex:"):
+            # Apply a regular expression to the current value
+            # Supported forms:
+            #   Regex:pattern
+            #   Regex:pattern|group_index
+            args = x[6:]
+            # Do not split the regex by all pipes; only split once to allow pipes in patterns
+            if "|" in args:
+                pattern, group_str = args.split("|", 1)
+                try:
+                    group_idx = int(group_str)
+                except ValueError:
+                    group_idx = 0
+            else:
+                pattern = args
+                group_idx = 0
+            if isinstance(lnjsn, (str, int, float)):
+                text = str(lnjsn)
+                try:
+                    m = re.search(pattern, text)
+                    if m:
+                        try:
+                            lnjsn = m.group(group_idx)
+                        except IndexError:
+                            lnjsn = m.group(0)
+                    else:
+                        return None
+                except re.error:
+                    return None
             else:
                 return None
         elif x.startswith("TimeForm:"):
