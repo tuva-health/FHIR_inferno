@@ -8,7 +8,7 @@ version = "0.1.0"
 description = "A simple library to parse FHIR JSON/NDJSON into CSV/Parquet or DataFrame"
 readme = "README.md"
 requires-python = ">=3.8"
-license = { file = "license" }
+license = { file = "license/license-2.0.txt" }
 authors = [
   { name = "FHIR Inferno Contributors" }
 ]
